@@ -61,11 +61,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Resources\Common\CirMove.cs" />
     <Compile Include="Assets\Resources\HDR\SimplifiedHDR.cs" />
+    <Compile Include="Assets\Resources\WaveEquation\Mobile\AddForceCameraScript.cs" />
+    <Compile Include="Assets\Resources\WaveEquation\Mobile\SmallScaleWater.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Resources\Common\GaussianBlur.shader" />
     <None Include="Assets\Resources\HDR\SimplifiedHDR.shader" />
+    <None Include="Assets\Resources\WaveEquation\Mobile\AddFource.shader" />
+    <None Include="Assets\Resources\WaveEquation\Mobile\HeightCode.cginc" />
+    <None Include="Assets\Resources\WaveEquation\Mobile\HeightToNormal.shader" />
+    <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater.shader" />
+    <None Include="Assets\Resources\WaveEquation\Mobile\WaterSimulation.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
 </Project>
