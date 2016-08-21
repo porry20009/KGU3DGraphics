@@ -61,14 +61,31 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Resources\CSMs\ClipCameraCS.cs" />
+    <Compile Include="Assets\Resources\CSMs\MergeAABB.cs" />
+    <Compile Include="Assets\Resources\CSMs\SimplifiedCSM.cs" />
     <Compile Include="Assets\Resources\Common\CirMove.cs" />
+    <Compile Include="Assets\Resources\Common\CirRotation.cs" />
+    <Compile Include="Assets\Resources\Common\EffectHelp.cs" />
+    <Compile Include="Assets\Resources\Common\KGLine.cs" />
     <Compile Include="Assets\Resources\HDR\SimplifiedHDR.cs" />
+    <Compile Include="Assets\Resources\Noise\Noise.cs" />
+    <Compile Include="Assets\Resources\Sky\SimpleSky.cs" />
     <Compile Include="Assets\Resources\WaveEquation\Mobile\AddForceCameraScript.cs" />
     <Compile Include="Assets\Resources\WaveEquation\Mobile\SmallScaleWater.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Resources\CSMs\ShadowPassOne.shader" />
+    <None Include="Assets\Resources\CSMs\ShadowPassTwo.shader" />
     <None Include="Assets\Resources\Common\GaussianBlur.shader" />
+    <None Include="Assets\Resources\Common\KGLine.shader" />
     <None Include="Assets\Resources\HDR\SimplifiedHDR.shader" />
+    <None Include="Assets\Resources\Noise\Gradient2D.shader" />
+    <None Include="Assets\Resources\Noise\Gradient3D.shader" />
+    <None Include="Assets\Resources\Noise\Typical2D.shader" />
+    <None Include="Assets\Resources\Sky\SimpleCloud.shader" />
+    <None Include="Assets\Resources\Sky\SimpleSky.shader" />
+    <None Include="Assets\Resources\Sky\SimpleSun.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\AddFource.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\HeightCode.cginc" />
     <None Include="Assets\Resources\WaveEquation\Mobile\HeightToNormal.shader" />

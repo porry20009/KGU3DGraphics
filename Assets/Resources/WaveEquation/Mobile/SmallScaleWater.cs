@@ -25,7 +25,6 @@ public class SmallScaleWater : MonoBehaviour
     public Vector3 m_sunDir = Vector3.one;
     [Range(0, 300)]
     public float m_sunspot = 100.0f;
-    public Color m_sunColor = new Color32(255, 255, 255, 255);
     public Color mWaterBodyColor = new Color32(24, 91, 98, 255);
 
     RenderTexture mRefractTexture = null;
@@ -208,7 +207,6 @@ public class SmallScaleWater : MonoBehaviour
         mWaterMaterial.SetTexture("_WaterNormal", mWaterNormal);
         mWaterMaterial.SetTexture("_WaterShapeTex", mWaterShapeTexture);
         mWaterMaterial.SetColor("_WaterColor", mWaterBodyColor);
-        mWaterMaterial.SetColor("_SunColor", m_sunColor);
         mWaterMaterial.SetFloat("_DistortLevel", mDistortValue);
         Shader.SetGlobalFloat("_WaterPlaneY", gameObject.transform.position.y);
 

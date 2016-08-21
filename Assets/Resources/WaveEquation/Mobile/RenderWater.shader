@@ -33,7 +33,6 @@
             uniform float4x4 g_matForceViewProj;
             uniform half  _DistortLevel;
 
-			uniform fixed4 _SunColor;
             uniform fixed4 _WaterColor;
 			uniform half4 _SunDir;
         
@@ -97,7 +96,7 @@
 				half diffuse_factor = max(0,dot(sunDir, normal));
                 fixed3 v3WaterColor = lerp(v3ReflectColor,v3RefractColor, fresnel);
 				v3WaterColor += diffuse_factor * _WaterColor;
-				v3WaterColor += specular_factor * _SunColor.rgb;
+				v3WaterColor += specular_factor;
 
 				//return diffuse_factor;
 				return fixed4(v3WaterColor, waterShape);
