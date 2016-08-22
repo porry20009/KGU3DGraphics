@@ -70,7 +70,7 @@
     <Compile Include="Assets\Resources\Common\KGLine.cs" />
     <Compile Include="Assets\Resources\HDR\SimplifiedHDR.cs" />
     <Compile Include="Assets\Resources\Noise\Noise.cs" />
-    <Compile Include="Assets\Resources\Sky\SimpleSky.cs" />
+    <Compile Include="Assets\Resources\Sky\SimplifiedSky.cs" />
     <Compile Include="Assets\Resources\WaveEquation\Mobile\AddForceCameraScript.cs" />
     <Compile Include="Assets\Resources\WaveEquation\Mobile\SmallScaleWater.cs" />
   </ItemGroup>
@@ -83,13 +83,14 @@
     <None Include="Assets\Resources\Noise\Gradient2D.shader" />
     <None Include="Assets\Resources\Noise\Gradient3D.shader" />
     <None Include="Assets\Resources\Noise\Typical2D.shader" />
-    <None Include="Assets\Resources\Sky\SimpleCloud.shader" />
-    <None Include="Assets\Resources\Sky\SimpleSky.shader" />
-    <None Include="Assets\Resources\Sky\SimpleSun.shader" />
+    <None Include="Assets\Resources\Sky\SimplifiedCloud.shader" />
+    <None Include="Assets\Resources\Sky\SimplifiedSky.shader" />
+    <None Include="Assets\Resources\Sky\SimplifiedSun.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\AddFource.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\HeightCode.cginc" />
     <None Include="Assets\Resources\WaveEquation\Mobile\HeightToNormal.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater.shader" />
+    <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater_Refraction.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\WaterSimulation.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />

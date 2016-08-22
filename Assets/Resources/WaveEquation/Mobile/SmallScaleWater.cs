@@ -21,12 +21,13 @@ public class SmallScaleWater : MonoBehaviour
     [Range(0, 1)]
     public float mForce = 0.5f;          //压力大小
 
-    public Transform m_sun = null;
-    public Vector3 m_sunDir = Vector3.one;
+    public Transform mSun = null;
+    public Vector3 mSunDir = Vector3.one;
     [Range(0, 300)]
-    public float m_sunspot = 100.0f;
+    public float mSunspot = 100.0f;
     public Color mWaterBodyColor = new Color32(24, 91, 98, 255);
 
+    bool mIsRefraction = false;
     RenderTexture mRefractTexture = null;
     RenderTexture mWaterNormal = null;
     Material mWaterMaterial = null;
@@ -36,9 +37,12 @@ public class SmallScaleWater : MonoBehaviour
     Camera mForceCamera = null;
     AddForceCameraScript mAddForceCameraScript = null;
     UpdateWaterParameterFunc mUpdateWaterParameterCallBack = null;
+
+    bool mIsPreRefraction = false;
     void Awake()
     {
         mRenderer = gameObject.GetComponent<Renderer>();
+        mIsRefraction = (mCanRefractLayer == 0 ? false : true);
         CreateRefractmap();
         CreateMaterial();
         CreateRefractCamera();
@@ -101,12 +105,16 @@ public class SmallScaleWater : MonoBehaviour
 
     void CreateMaterial()
     {
-        mWaterMaterial = new Material(Shader.Find("Water/SmallScale/RenderWater"));
+        if (mIsRefraction)
+            mWaterMaterial = new Material(Shader.Find("Water/SmallScale/RenderWater_Refraction"));
+        else
+            mWaterMaterial = new Material(Shader.Find("Water/SmallScale/RenderWater"));
         mRenderer.sharedMaterial = mWaterMaterial;
     }
 
     void CreateRefractmap()
     {
+#if UNITY_EDITOR
         if (mRefractTexture == null)
         {
             mRefractTexture = new RenderTexture(Screen.width, Screen.width, 16, RenderTextureFormat.ARGB32);
@@ -115,22 +123,43 @@ public class SmallScaleWater : MonoBehaviour
             mRefractTexture.isPowerOfTwo = true;
             mRefractTexture.hideFlags = HideFlags.DontSave;
         }
+#else
+        if (mIsRefraction && mRefractTexture == null)
+        {
+            mRefractTexture = new RenderTexture(Screen.width, Screen.width, 16, RenderTextureFormat.ARGB32);
+            mRefractTexture.wrapMode = TextureWrapMode.Clamp;
+            mRefractTexture.name = "Refract Texture";
+            mRefractTexture.isPowerOfTwo = true;
+            mRefractTexture.hideFlags = HideFlags.DontSave;
+        }
+#endif
     }
     void CreateRefractCamera()
     {
+#if UNITY_EDITOR
         if (mRefractCamera == null)
         {
-            mRefractCamera = CreateRenderCamera(Camera.main.gameObject.transform, Camera.main, "SpringWaterRefractCamera", -4);
+            mRefractCamera = CreateRenderCamera(Camera.main.gameObject.transform, Camera.main, "RefractCamera", -4);
             mRefractCamera.enabled = false;
             mRefractCamera.targetTexture = mRefractTexture;
             mRefractCamera.cullingMask = mCanRefractLayer;
         }
+#else
+        if (mIsRefraction && mRefractCamera == null)
+        {
+            mRefractCamera = CreateRenderCamera(Camera.main.gameObject.transform, Camera.main, "RefractCamera", -4);
+            mRefractCamera.enabled = false;
+            mRefractCamera.targetTexture = mRefractTexture;
+            mRefractCamera.cullingMask = mCanRefractLayer;
+        }
+#endif
+
     }
     void CreateForceCamera()
     {
         if (mForceCamera == null)
         {
-            mForceCamera = CreateRenderCamera(gameObject.transform, null, "SpringForceCamera", -3);
+            mForceCamera = CreateRenderCamera(gameObject.transform, null, "ForceCamera", -3);
             mForceCamera.enabled = true;
             mForceCamera.targetTexture = null;
             mForceCamera.cullingMask = mCanDisturbWaterLayer;
@@ -199,20 +228,32 @@ public class SmallScaleWater : MonoBehaviour
 
     void SetGPUParameter()
     {
-        mRefractCamera.cullingMask = mCanRefractLayer;
+#if UNITY_EDITOR
+        mIsRefraction = (mCanRefractLayer == 0 ? false : true);
+        if (mIsPreRefraction != mIsRefraction)
+        {
+            CreateMaterial();
+        }
+        mIsPreRefraction = mIsRefraction;
+#endif
+        if (mRefractCamera != null)
+            mRefractCamera.cullingMask = mCanRefractLayer;
         mForceCamera.cullingMask = mCanDisturbWaterLayer;
 
-        mWaterMaterial.SetTexture("_RefractTex", mRefractTexture);
+        if (mIsRefraction)
+        {
+            mWaterMaterial.SetTexture("_RefractTex", mRefractTexture);
+            mWaterMaterial.SetFloat("_DistortLevel", mDistortValue);
+        }
         mWaterMaterial.SetTexture("_ReflectTex", mReflectTexture);
         mWaterMaterial.SetTexture("_WaterNormal", mWaterNormal);
         mWaterMaterial.SetTexture("_WaterShapeTex", mWaterShapeTexture);
         mWaterMaterial.SetColor("_WaterColor", mWaterBodyColor);
-        mWaterMaterial.SetFloat("_DistortLevel", mDistortValue);
         Shader.SetGlobalFloat("_WaterPlaneY", gameObject.transform.position.y);
 
-        if (m_sun != null)
-            m_sunDir = m_sun.forward;
-        mWaterMaterial.SetVector("_SunDir", new Vector4(m_sunDir.x, m_sunDir.y, m_sunDir.z, m_sunspot));
+        if (mSun != null)
+            mSunDir = -mSun.forward;
+        mWaterMaterial.SetVector("_SunDir", new Vector4(mSunDir.x, mSunDir.y, mSunDir.z, mSunspot));
 
         Matrix4x4 matAABBPoj = Matrix4x4.identity;
         Vector3 v3MaxInViewSpace = Vector3.zero;
@@ -241,12 +282,15 @@ public class SmallScaleWater : MonoBehaviour
 
     void RealTimeRefraction()
     {
-        Vector3 pos = gameObject.transform.position;
-        Vector3 normal = new Vector3(0,1,0);
-        Vector4 waterClipPlane = CameraSpacePlane(mRefractCamera, pos, normal, m_waterPlaneOffset, -1.0f);
-        Matrix4x4 matrixRefract = Camera.main.CalculateObliqueMatrix(waterClipPlane);
-        mRefractCamera.projectionMatrix = matrixRefract;
-        mRefractCamera.Render();
+        if (mIsRefraction)
+        {
+            Vector3 pos = gameObject.transform.position;
+            Vector3 normal = new Vector3(0, 1, 0);
+            Vector4 waterClipPlane = CameraSpacePlane(mRefractCamera, pos, normal, m_waterPlaneOffset, -1.0f);
+            Matrix4x4 matrixRefract = Camera.main.CalculateObliqueMatrix(waterClipPlane);
+            mRefractCamera.projectionMatrix = matrixRefract;
+            mRefractCamera.Render();
+        }
     }
 
     void CalcuWaterPlaneAABBInViewSpace(Camera camera, Bounds aabbInWorldSpace, ref Vector3 v3MaxInViewSpace, ref Vector3 v3MinInViewSpace)

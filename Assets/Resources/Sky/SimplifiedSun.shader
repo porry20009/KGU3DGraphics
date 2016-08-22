@@ -1,4 +1,4 @@
-﻿Shader "Sky/SimpleSun" 
+﻿Shader "Sky/SimplifiedSun" 
 {
 	Properties 
 	{

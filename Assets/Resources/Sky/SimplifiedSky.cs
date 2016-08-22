@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 //由于卷云没有光照模型，所以天空只是适合中午
-class SimpleSky : MonoBehaviour
+class SimplifiedSky : MonoBehaviour
 {
     public enum SkyQuality
     {
@@ -118,7 +118,7 @@ class SimpleSky : MonoBehaviour
 
     void CreateSun()
     {
-        m_sunMaterial = new Material(Shader.Find("Sky/SimpleSun"));
+        m_sunMaterial = new Material(Shader.Find("Sky/SimplifiedSun"));
         GameObject sunQuad = GameObject.CreatePrimitive(PrimitiveType.Quad);
         sunQuad.name = "Sun";
         sunQuad.transform.parent = transform;
@@ -132,7 +132,7 @@ class SimpleSky : MonoBehaviour
 
     void CreateSky()
     {
-        m_skyMaterial = new Material(Shader.Find("Sky/SimpleSky"));
+        m_skyMaterial = new Material(Shader.Find("Sky/SimplifiedSky"));
         GameObject skyObj = new GameObject("Sky");
         skyObj.transform.parent = transform;
         skyObj.transform.localPosition = new Vector3(0, 0, 0);
@@ -146,7 +146,7 @@ class SimpleSky : MonoBehaviour
         Noise.CreateCloudTexture(ref m_cloudTexture1, 256, 256, m_noiseFrequency, m_noiseAmplitude, Vector2.zero, m_cloudSharpness, m_cloudCover);
         Noise.CreateCloudTexture(ref m_cloudTexture2, 256, 256, m_noiseFrequency, m_noiseAmplitude, Vector2.one * 100, m_cloudSharpness, m_cloudCover);
 
-        m_cloudMaterial = new Material(Shader.Find("Sky/SimpleCloud"));
+        m_cloudMaterial = new Material(Shader.Find("Sky/SimplifiedCloud"));
         GameObject cloudObj = new GameObject("Cloud");
         cloudObj.transform.parent = transform;
         cloudObj.transform.localPosition = Vector3.zero;

@@ -1,4 +1,4 @@
-﻿Shader "Sky/SimpleCloud" 
+﻿Shader "Sky/SimplifiedCloud" 
 {
     SubShader
     {

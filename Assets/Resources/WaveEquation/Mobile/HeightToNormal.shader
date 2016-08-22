@@ -64,7 +64,7 @@
 	            half3 n = half3(fHeightB - fHeightT, fHeightR - fHeightL, 0.4);
 	            half3 normal = (n + 1.0f) * 0.5f;
 	
-	            return fixed4(normal.rgb, 1.0f);
+	            return fixed4(normal.rbg, 1.0f);
             }
             ENDCG
         }
