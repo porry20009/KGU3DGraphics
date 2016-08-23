@@ -27,11 +27,16 @@ public class SmallScaleWater : MonoBehaviour
     public float mSunspot = 100.0f;
     public Color mWaterBodyColor = new Color32(24, 91, 98, 255);
 
+    public bool mIsDrop = true;
+    public float mDropSize = 0.2f;
+    public float mDropFreq = 1.0f;
+
     bool mIsRefraction = false;
     RenderTexture mRefractTexture = null;
     RenderTexture mWaterNormal = null;
     Material mWaterMaterial = null;
 
+    ParticleSystem mDropObjects = null;
     Renderer mRenderer = null;
     Camera mRefractCamera = null;
     Camera mForceCamera = null;
@@ -39,6 +44,7 @@ public class SmallScaleWater : MonoBehaviour
     UpdateWaterParameterFunc mUpdateWaterParameterCallBack = null;
 
     bool mIsPreRefraction = false;
+    float mWaterShapeSize = 0.0f;
     void Awake()
     {
         mRenderer = gameObject.GetComponent<Renderer>();
@@ -48,6 +54,8 @@ public class SmallScaleWater : MonoBehaviour
         CreateRefractCamera();
         CreateForceCamera();
         SetGPUParameter();
+        if (mIsDrop)
+            CreateDrops();
     }
 
     void InitPostAddForceCameraScript(RenderTexture[] tex)
@@ -69,6 +77,11 @@ public class SmallScaleWater : MonoBehaviour
         {
 #if UNITY_EDITOR
             SetGPUParameter();
+            if (mDropObjects != null)
+            {
+                mDropObjects.startSize = mDropSize;
+                mDropObjects.startSpeed = mDropFreq;
+            }
 #endif
             RealTimeRefraction();
         }
@@ -179,6 +192,46 @@ public class SmallScaleWater : MonoBehaviour
             mAddForceCameraScript.mWaterShapeTex = mWaterShapeTexture;
         }
     }
+
+    void CreateDrops()
+    {
+        GameObject go = new GameObject("Drops");
+        int compare = 1 ; 
+        for (int i = 0; i < 32; i++ )
+        {
+            int f = mCanDisturbWaterLayer.value & compare;
+            if (f > 0)
+            {
+                go.layer = i;
+                break;
+            }
+            compare *= 2;
+        }
+        go.transform.parent = transform;
+        go.transform.localPosition = new Vector3(0,1,0);
+        go.transform.localRotation = Quaternion.identity;
+        go.transform.localScale = Vector3.one;
+        go.transform.Rotate(90.0f, 0.0f, 0.0f, Space.Self);
+
+        mDropObjects = go.GetComponent<ParticleSystem>();
+        if (mDropObjects == null)
+            mDropObjects = go.AddComponent<ParticleSystem>();
+        ParticleSystem.CollisionModule collisionModule = mDropObjects.collision;
+        collisionModule.SetPlane(0, transform);
+        collisionModule.minKillSpeed = 1.0f;
+        ParticleSystem.MinMaxCurve minmaxCurve = new ParticleSystem.MinMaxCurve();
+        minmaxCurve.constantMax = 0.0f;
+        minmaxCurve.constantMin = 0.0f;
+        collisionModule.bounce = minmaxCurve;
+        collisionModule.enabled = true;
+
+        ParticleSystem.ShapeModule shapeModule = mDropObjects.shape;
+        shapeModule.shapeType = ParticleSystemShapeType.Box;
+        shapeModule.box = new Vector3(mWaterShapeSize, mWaterShapeSize);
+
+        mDropObjects.startSize = mDropSize;
+        mDropObjects.startSpeed = mDropFreq;
+    }
     Vector4 CameraSpacePlane(Camera cam, Vector3 pos, Vector3 normal, float planeOffset, float sideSign)
     {
         Vector3 offsetPos = pos + normal * planeOffset;
@@ -262,6 +315,7 @@ public class SmallScaleWater : MonoBehaviour
         CalcuWaterPlaneAABBInViewSpace(mForceCamera, rd.bounds, ref v3MaxInViewSpace, ref v3MinInViewSpace);
         BuildOrthogonalProjectMatrix(ref matAABBPoj, v3MaxInViewSpace, v3MinInViewSpace);
         mForceCamera.projectionMatrix = matAABBPoj;
+        mWaterShapeSize = Vector3.Distance(v3MaxInViewSpace, v3MinInViewSpace);
 
         Matrix4x4 matProj = GL.GetGPUProjectionMatrix(mForceCamera.projectionMatrix, true);
         Matrix4x4 matSVP = matProj * mForceCamera.worldToCameraMatrix;
@@ -296,8 +350,8 @@ public class SmallScaleWater : MonoBehaviour
     void CalcuWaterPlaneAABBInViewSpace(Camera camera, Bounds aabbInWorldSpace, ref Vector3 v3MaxInViewSpace, ref Vector3 v3MinInViewSpace)
     {
         Vector3[] vertices = { Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero };
-        Vector3 min = aabbInWorldSpace.min + new Vector3(0, -10, 0);
-        Vector3 max = aabbInWorldSpace.max + new Vector3(0, 10, 0);
+        Vector3 min = aabbInWorldSpace.min + new Vector3(0, -1, 0);
+        Vector3 max = aabbInWorldSpace.max + new Vector3(0, 1, 0);
 
         vertices[0].x = min.x; vertices[0].y = min.y; vertices[0].z = min.z;
         vertices[1].x = max.x; vertices[1].y = min.y; vertices[1].z = min.z;

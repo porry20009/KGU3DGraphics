@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/HDR.unity
+- path: Assets/WaveEquation.unity
   isLoaded: 1
   isActive: 1
