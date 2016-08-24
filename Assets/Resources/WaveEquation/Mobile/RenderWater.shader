@@ -31,6 +31,7 @@
 
             uniform fixed4 _WaterColor;
 			uniform half4 _SunDir;
+			uniform half _FrenelBias;
         
             struct VS_OUTPUT
             {
@@ -80,7 +81,7 @@
 	          
 	            half NdotL  = max(dot(v3ViewDir.xyz,normal),0);
                 half facing = 1.0 - NdotL;
-                half fresnel = max(0,Fresnel(NdotL,0.55,5));
+                half fresnel = max(0,Fresnel(NdotL,_FrenelBias,5));
 
 				half3 sunDir = normalize(_SunDir.xyz);
 				float specular_factor = pow(max(0,dot(sunDir, v3ReflectDir)), _SunDir.w);

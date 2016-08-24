@@ -10,10 +10,8 @@
 	}
     SubShader 
     {
-        // Draw ourselves after all opaque geometry
 		Tags { "RenderType"="Opaque" }
 
-        // Render the object with the texture generated above, and invert it's colors
         Pass 
         {
 			Lighting Off
@@ -63,20 +61,16 @@
 		           half3( 0.0f, 1.0f, 0.25f),
 	            };	
 	            half shape = tex2D(_WaterShapeTex, input.v2Texcoord);
-	            //前一桢的弹簧长度
 	            half fHeightPrev = DecodeHeightmap(tex2D(_HeightPrevTex, input.v2Texcoord));
 	
-	            //当前帧弹簧的长度，它取的是邻近像素的平均值，而不是单一像素的值
-	            half fNeighCurrent = 0;
+	            half fHeighCurrent = 0;
 	            for ( int i=0; i<4; i++ )
 	            {
 	             	half2 texcoord = input.v2Texcoord + offset[i].xy * _TextureSize.xy;
-	             	fNeighCurrent += (DecodeHeightmap(tex2D(_HeightCurrentTex, texcoord)) * offset[i].z);
+	             	fHeighCurrent += (DecodeHeightmap(tex2D(_HeightCurrentTex, texcoord)) * offset[i].z);
 	            }	
 	
-	            // 预测下一帧弹簧的长度
-	            half fHeight = fNeighCurrent * 2.0f - fHeightPrev;
-	            // 减弱弹簧的长度，让它慢慢停止
+	            half fHeight = fHeighCurrent * 2.0f - fHeightPrev;
 	            fHeight *= _Damping;
 	            fixed4 color = EncodeHeightmap(fHeight);
 			
