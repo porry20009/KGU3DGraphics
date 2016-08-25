@@ -7,10 +7,8 @@
 	}
     SubShader 
     {
-        // Draw ourselves after all opaque geometry
 		Tags { "RenderType"="Opaque" }
 
-        // Render the object with the texture generated above, and invert it's colors
         Pass 
         {
 			Lighting Off
@@ -28,7 +26,15 @@
             
             uniform sampler2D _HeightCurrentTex : register(s0);
             uniform half4 _TextureSize;
+			uniform half _NormalScale;
 
+			static const float2 g_offset[4] =
+	        {
+				float2(-1.0f, 0.0f),
+		        float2( 1.0f, 0.0f),
+		        float2( 0.0f,-1.0f),
+		        float2( 0.0f, 1.0f),
+	        };	
         
             struct VS_OUTPUT
             {
@@ -48,20 +54,12 @@
 
             fixed4 MainPS(VS_OUTPUT input) : COLOR 
             {   
-	            half2 offset[4] =
-	            {
-		           half2(-1.0f, 0.0f),
-		           half2( 1.0f, 0.0f),
-		           half2( 0.0f,-1.0f),
-		           half2( 0.0f, 1.0f),
-	            };	
-
-	            half fHeightL = DecodeHeightmap(tex2D(_HeightCurrentTex, input.v2Texcoord + offset[0]*_TextureSize.xy));
-	            half fHeightR = DecodeHeightmap(tex2D(_HeightCurrentTex, input.v2Texcoord + offset[1]*_TextureSize.xy));
-	            half fHeightT = DecodeHeightmap(tex2D(_HeightCurrentTex, input.v2Texcoord + offset[2]*_TextureSize.xy));
-	            half fHeightB = DecodeHeightmap(tex2D(_HeightCurrentTex, input.v2Texcoord + offset[3]*_TextureSize.xy));
+	            half fHeightL = DecodeHeightmap(tex2D(_HeightCurrentTex, input.v2Texcoord + g_offset[0]*_TextureSize.xy));
+	            half fHeightR = DecodeHeightmap(tex2D(_HeightCurrentTex, input.v2Texcoord + g_offset[1]*_TextureSize.xy));
+	            half fHeightT = DecodeHeightmap(tex2D(_HeightCurrentTex, input.v2Texcoord + g_offset[2]*_TextureSize.xy));
+	            half fHeightB = DecodeHeightmap(tex2D(_HeightCurrentTex, input.v2Texcoord + g_offset[3]*_TextureSize.xy));
 	
-	            half3 n = half3(fHeightB - fHeightT, fHeightR - fHeightL, 0.4);
+	            half3 n = half3(fHeightB - fHeightT, fHeightR - fHeightL, _NormalScale);
 	            half3 normal = (n + 1.0f) * 0.5f;
 	
 	            return fixed4(normal.rbg, 1.0f);

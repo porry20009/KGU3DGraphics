@@ -20,6 +20,8 @@ public class AddForceCameraScript : MonoBehaviour
     Camera mCamera = null;
 
     [HideInInspector]
+    public float mNormalScale = 0.4f;
+    [HideInInspector]
     public float mForce = 0.5f;
     [HideInInspector]
     public int mTexWidth = 256;
@@ -45,8 +47,9 @@ public class AddForceCameraScript : MonoBehaviour
         mTexHeight = (int)args[1];
         mDampingRatio = (float)args[2];
         mForce = (float)args[3];
-        if (args.Length > 4)
-            mWaterShapeTex = (RenderTexture)args[4];
+        mNormalScale = (float)args[4];
+        if (args.Length > 5)
+            mWaterShapeTex = (Texture)args[5];
     }
 
     void OnPostRender()
@@ -140,6 +143,7 @@ public class AddForceCameraScript : MonoBehaviour
         {
             mHeightToNormalMaterial.SetTexture("_HeightCurrentTex", mProcessmaps[(int)WaterProcessmap.CurrHeight]);
             mHeightToNormalMaterial.SetVector("_TextureSize", new Vector4(1.0f / (float)mTexWidth, 1.0f / (float)mTexWidth, 0, 0));
+            mHeightToNormalMaterial.SetFloat("_NormalScale", mNormalScale);
             mProcessmaps[(int)WaterProcessmap.Normal].DiscardContents();
             Graphics.Blit(mProcessmaps[(int)WaterProcessmap.CurrHeight], mProcessmaps[(int)WaterProcessmap.Normal], mHeightToNormalMaterial);
         }

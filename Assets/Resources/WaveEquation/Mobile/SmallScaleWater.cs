@@ -36,6 +36,8 @@ public class SmallScaleWater : MonoBehaviour
     public float mForce = 0.5f;          //压力大小
     [Range(0, 1)]
     public float mFrenelBias = 0.5f;
+    [Range(0, 1)]
+    public float mNormalScale = 0.5f;
 
     public Transform mSun = null;
     public Vector3 mSunDir = Vector3.one;
@@ -366,11 +368,11 @@ public class SmallScaleWater : MonoBehaviour
         {
             if (mWaterShapeTexture != null)
             {
-                mUpdateWaterParameterCallBack(new System.Object[] { mTexWidth, mTexHeight, mDampingRatio, mForce, mWaterShapeTexture });
+                mUpdateWaterParameterCallBack(new System.Object[] { mTexWidth, mTexHeight, mDampingRatio, mForce,mNormalScale, mWaterShapeTexture });
             }
             else
             {
-                mUpdateWaterParameterCallBack(new System.Object[] { mTexWidth, mTexHeight, mDampingRatio, mForce });
+                mUpdateWaterParameterCallBack(new System.Object[] { mTexWidth, mTexHeight, mDampingRatio, mForce,mNormalScale });
             }
         }
     }
