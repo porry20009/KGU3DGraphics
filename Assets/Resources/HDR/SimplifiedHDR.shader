@@ -150,7 +150,12 @@
 	fixed4 AutoExposureBloomPS(VS_OUTPUT input) : COLOR
 	{
 		fixed4 image = tex2D(_MainTex, input.uv);
+#if UNITY_UV_STARTS_AT_TOP
 		fixed4 bloom = tex2D(_BloomTex, half2(input.uv.x,1 - input.uv.y));
+#else
+		fixed4 bloom = tex2D(_BloomTex, input.uv);
+
+#endif
 		fixed adaptedLum = (DecodeLuminance(tex2D(_AdaptedLumTex, half2(0.5, 0.5))));
 		fixed3 color = ToneMappingHigh(image.rgb,adaptedLum);
 		return fixed4(color.rgb + bloom.rgb,1.0);
