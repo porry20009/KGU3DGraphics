@@ -90,6 +90,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="KGU3DGraphics.CSharp.Plugins.csproj">
+      <Project>{132106FA-6C9C-07EA-3EF2-585D2B88C5CF}</Project>
+      <Name>KGU3DGraphics.CSharp.Plugins</Name>
+    </ProjectReference>
     <ProjectReference Include="KGU3DGraphics.CSharp.csproj">
       <Project>{229A22A2-80B5-8981-E31C-80AB688A70E4}</Project>
       <Name>KGU3DGraphics.CSharp</Name>
@@ -181,6 +185,9 @@
     <Compile Include="Assets\NGUI\Scripts\Editor\UIWidgetContainerEditor.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UIWidgetInspector.cs" />
     <Compile Include="Assets\NGUI\Scripts\Editor\UIWrapContentEditor.cs" />
+    <Compile Include="Assets\Slua\Editor\CustomEditor.cs" />
+    <Compile Include="Assets\Slua\Editor\CustomExport.cs" />
+    <Compile Include="Assets\Slua\Editor\LuaCodeGen.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\NGUI\Examples\Atlases\Fantasy\Fantasy Font - Normal.txt" />
@@ -242,6 +249,14 @@
     <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater_Refraction.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\WaterSimulation.shader" />
+    <None Include="Assets\Slua\Resources\circle\circle.txt" />
+    <None Include="Assets\Slua\Resources\custom.txt" />
+    <None Include="Assets\Slua\Resources\delegate.txt" />
+    <None Include="Assets\Slua\Resources\main.txt" />
+    <None Include="Assets\Slua\Resources\module\some.txt" />
+    <None Include="Assets\Slua\Resources\perf.txt" />
+    <None Include="Assets\Slua\Resources\valuetype.txt" />
+    <None Include="Assets\Slua\Resources\varobj.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\SyntaxTree\UnityVS\2013\UnityVS.CSharp.targets" />
 </Project>
