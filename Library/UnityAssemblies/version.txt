@@ -1,6 +1,15 @@
 5.3.4f1:2.2.0.0
-WebPlayer
+Android
 E:/DevelopEnvironment/U3D5.3/Editor/Data/Managed/UnityEngine.dll
 E:/DevelopEnvironment/U3D5.3/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll
 E:/DevelopEnvironment/U3D5.3/Editor/Data/UnityExtensions/Unity/Networking/UnityEngine.Networking.dll
 E:/DevelopEnvironment/U3D5.3/Editor/Data/Managed/UnityEditor.dll
+E:/DevelopEnvironment/U3D5.3/Editor/Data/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll
+E:/DevelopEnvironment/U3D5.3/Editor/Data/UnityExtensions/Unity/EditorTestsRunner/Editor/nunit.framework.dll
+E:/DevelopEnvironment/U3D5.3/Editor/Data/UnityExtensions/Unity/EditorTestsRunner/Editor/UnityEditor.EditorTestsRunner.dll
+E:/DevelopEnvironment/U3D5.3/Editor/Data/UnityExtensions/Unity/GUISystem/Editor/UnityEditor.UI.dll
+E:/DevelopEnvironment/U3D5.3/Editor/Data/UnityExtensions/Unity/Networking/Editor/UnityEditor.Networking.dll
+E:/DevelopEnvironment/U3D5.3/Editor/Data/UnityExtensions/Unity/TreeEditor/Editor/UnityEditor.TreeEditor.dll
+E:/DevelopEnvironment/U3D5.3/Editor/Data/Managed/UnityEditor.Graphs.dll
+E:/DevelopEnvironment/U3D5.3/Editor/Data/PlaybackEngines/AndroidPlayer/UnityEditor.Android.Extensions.dll
+C:/Program Files (x86)/Microsoft Visual Studio Tools for Unity/2013/Editor/SyntaxTree.VisualStudio.Unity.Bridge.dll
