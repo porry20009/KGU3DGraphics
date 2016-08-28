@@ -32,8 +32,8 @@ public class SmallScaleWater : MonoBehaviour
     public float mDampingRatio = 0.97f;  //区间[0,1]
     [Range(0, 10)]
     public float mDistortValue = 0.5f;  //扭曲值
-    [Range(0, 1)]
-    public float mForce = 0.5f;          //压力大小
+   // [Range(0, 1)]
+    float mForce = 0.5f;          //压力大小
     [Range(0, 1)]
     public float mFrenelBias = 0.5f;
     [Range(0, 1)]

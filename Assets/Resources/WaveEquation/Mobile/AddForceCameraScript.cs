@@ -31,6 +31,14 @@ public class AddForceCameraScript : MonoBehaviour
     public float mDampingRatio = 0.95f;
     [HideInInspector]
     public Texture mWaterShapeTex = null;
+
+    int mHForce = 0;
+    int mHHeightPrevTex = 0;
+    int mHHeightCurrentTex = 0;
+    int mHWaterShapeTex = 0;
+    int mHDamping = 0;
+    int mHTextureSize = 0;
+    int mHNormalScale = 0;
     void Start()
     {
         mCamera = GetComponent<Camera>();
@@ -77,6 +85,14 @@ public class AddForceCameraScript : MonoBehaviour
         mAddForceShader = Shader.Find("Water/SmallScale/AddFource");
         mWavePropagationMaterial = new Material(Shader.Find("Water/SmallScale/WaterSimulation"));
         mHeightToNormalMaterial = new Material(Shader.Find("Water/SmallScale/HeightToNormal"));
+
+        mHForce = Shader.PropertyToID("_Force");
+        mHHeightPrevTex = Shader.PropertyToID("_HeightPrevTex");
+        mHHeightCurrentTex = Shader.PropertyToID("_HeightCurrentTex");
+        mHWaterShapeTex = Shader.PropertyToID("_WaterShapeTex");
+        mHDamping = Shader.PropertyToID("_Damping");
+        mHTextureSize = Shader.PropertyToID("_TextureSize");
+        mHNormalScale = Shader.PropertyToID("_NormalScale");
     }
 
     void CreateProcessmap()
@@ -120,18 +136,18 @@ public class AddForceCameraScript : MonoBehaviour
 
     void AddForce()
     {
-        Shader.SetGlobalFloat("_Force", mForce);
+        Shader.SetGlobalFloat(mHForce, mForce);
     }
 
     void RenderSpreadForce()
     {
         if (mWavePropagationMaterial != null)
         {
-            mWavePropagationMaterial.SetTexture("_HeightPrevTex", mProcessmaps[(int)WaterProcessmap.PreHeight]);
-            mWavePropagationMaterial.SetTexture("_HeightCurrentTex", mProcessmaps[(int)WaterProcessmap.CurrHeight]);
-            mWavePropagationMaterial.SetTexture("_WaterShapeTex", mWaterShapeTex);
-            mWavePropagationMaterial.SetFloat("_Damping", mDampingRatio);
-            mWavePropagationMaterial.SetVector("_TextureSize", new Vector4(1.0f / (float)mTexWidth, 1.0f / (float)mTexWidth, 0, 0));
+            mWavePropagationMaterial.SetTexture(mHHeightPrevTex, mProcessmaps[(int)WaterProcessmap.PreHeight]);
+            mWavePropagationMaterial.SetTexture(mHHeightCurrentTex, mProcessmaps[(int)WaterProcessmap.CurrHeight]);
+            mWavePropagationMaterial.SetTexture(mHWaterShapeTex, mWaterShapeTex);
+            mWavePropagationMaterial.SetFloat(mHDamping, mDampingRatio);
+            mWavePropagationMaterial.SetVector(mHTextureSize,  new Vector4(1.0f / (float)mTexWidth, 1.0f / (float)mTexHeight, 0, 0));
             mProcessmaps[(int)WaterProcessmap.NextHeight].DiscardContents();
             Graphics.Blit(mProcessmaps[(int)WaterProcessmap.PreHeight], mProcessmaps[(int)WaterProcessmap.NextHeight], mWavePropagationMaterial);
         }
@@ -141,9 +157,9 @@ public class AddForceCameraScript : MonoBehaviour
     {
         if (mHeightToNormalMaterial != null)
         {
-            mHeightToNormalMaterial.SetTexture("_HeightCurrentTex", mProcessmaps[(int)WaterProcessmap.CurrHeight]);
-            mHeightToNormalMaterial.SetVector("_TextureSize", new Vector4(1.0f / (float)mTexWidth, 1.0f / (float)mTexWidth, 0, 0));
-            mHeightToNormalMaterial.SetFloat("_NormalScale", mNormalScale);
+            mHeightToNormalMaterial.SetTexture(mHHeightCurrentTex, mProcessmaps[(int)WaterProcessmap.CurrHeight]);
+            mHeightToNormalMaterial.SetVector(mHTextureSize, new Vector4(1.0f / (float)mTexWidth, 1.0f / (float)mTexHeight, 0, 0));
+            mHeightToNormalMaterial.SetFloat(mHNormalScale, mNormalScale);
             mProcessmaps[(int)WaterProcessmap.Normal].DiscardContents();
             Graphics.Blit(mProcessmaps[(int)WaterProcessmap.CurrHeight], mProcessmaps[(int)WaterProcessmap.Normal], mHeightToNormalMaterial);
         }
@@ -151,7 +167,7 @@ public class AddForceCameraScript : MonoBehaviour
 
     void SwapHeightmap()
     {
-        GetComponent<Camera>().targetTexture = mProcessmaps[(int)WaterProcessmap.CurrHeight];
+        mCamera.targetTexture = mProcessmaps[(int)WaterProcessmap.CurrHeight];
         RenderTexture temp = mProcessmaps[(int)WaterProcessmap.PreHeight];
         mProcessmaps[(int)WaterProcessmap.PreHeight] = mProcessmaps[(int)WaterProcessmap.CurrHeight];
         mProcessmaps[(int)WaterProcessmap.CurrHeight] = mProcessmaps[(int)WaterProcessmap.NextHeight];

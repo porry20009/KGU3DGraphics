@@ -95,7 +95,7 @@
 				float specular_factor = pow(max(0,dot(sunDir, v3ReflectDir)), _SunDir.w);
                 
 				half diffuse_factor = max(0,dot(sunDir, normal));
-                fixed3 v3WaterColor = lerp(v3ReflectColor,v3RefractColor, fresnel);
+                fixed3 v3WaterColor = lerp(v3RefractColor,v3ReflectColor, fresnel);
 				v3WaterColor += diffuse_factor * _WaterColor;
 				v3WaterColor += specular_factor;
 
