@@ -13,11 +13,13 @@
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile>Unity Subset v3.5</TargetFrameworkProfile>
-    <CompilerResponseFile></CompilerResponseFile>
+    <CompilerResponseFile>
+    </CompilerResponseFile>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>Android:13</UnityBuildTarget>
     <UnityVersion>5.3.4f1</UnityVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <LangVersion Condition=" '$(VisualStudioVersion)' != '10.0' ">4</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -217,6 +219,7 @@
     <Compile Include="Assets\Resources\HDR\SimplifiedHDR.cs" />
     <Compile Include="Assets\Resources\Noise\Noise.cs" />
     <Compile Include="Assets\Resources\Others\UIFPS.cs" />
+    <Compile Include="Assets\Resources\PerlinNoiseWater\PerlinNoiseWater.cs" />
     <Compile Include="Assets\Resources\Sky\SimplifiedSky.cs" />
     <Compile Include="Assets\Resources\WaveEquation\Mobile\AddForceCameraScript.cs" />
     <Compile Include="Assets\Resources\WaveEquation\Mobile\SmallScaleWater.cs" />
@@ -955,6 +958,8 @@
     <None Include="Assets\Resources\Noise\Gradient2D.shader" />
     <None Include="Assets\Resources\Noise\Gradient3D.shader" />
     <None Include="Assets\Resources\Noise\Typical2D.shader" />
+    <None Include="Assets\Resources\PerlinNoiseWater\ToNormal.shader" />
+    <None Include="Assets\Resources\PerlinNoiseWater\PerlinNoiseWater.shader" />
     <None Include="Assets\Resources\Sky\SimplifiedCloud.shader" />
     <None Include="Assets\Resources\Sky\SimplifiedSky.shader" />
     <None Include="Assets\Resources\Sky\SimplifiedSun.shader" />

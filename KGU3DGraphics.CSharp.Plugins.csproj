@@ -137,6 +137,8 @@
     <None Include="Assets\Resources\Noise\Gradient2D.shader" />
     <None Include="Assets\Resources\Noise\Gradient3D.shader" />
     <None Include="Assets\Resources\Noise\Typical2D.shader" />
+    <None Include="Assets\Resources\PerlinNoiseWater\PerlinNoiseWater.shader" />
+    <None Include="Assets\Resources\PerlinNoiseWater\ToNormal.shader" />
     <None Include="Assets\Resources\Sky\SimplifiedCloud.shader" />
     <None Include="Assets\Resources\Sky\SimplifiedSky.shader" />
     <None Include="Assets\Resources\Sky\SimplifiedSun.shader" />
