@@ -24,9 +24,7 @@ public class AddForceCameraScript : MonoBehaviour
     [HideInInspector]
     public float mForce = 0.5f;
     [HideInInspector]
-    public int mTexWidth = 256;
-    [HideInInspector]
-    public int mTexHeight = 256;
+    public int mTexSize = 256;
     [HideInInspector]
     public float mDampingRatio = 0.95f;
     [HideInInspector]
@@ -51,13 +49,12 @@ public class AddForceCameraScript : MonoBehaviour
 
     public void UpdateWaterParameter(params System.Object[] args)
     {
-        mTexWidth = (int)args[0];
-        mTexHeight = (int)args[1];
-        mDampingRatio = (float)args[2];
-        mForce = (float)args[3];
-        mNormalScale = (float)args[4];
-        if (args.Length > 5)
-            mWaterShapeTex = (Texture)args[5];
+        mTexSize = (int)args[0];
+        mDampingRatio = (float)args[1];
+        mForce = (float)args[2];
+        mNormalScale = (float)args[3];
+        if (args.Length > 4)
+            mWaterShapeTex = (Texture)args[4];
     }
 
     void OnPostRender()
@@ -66,6 +63,7 @@ public class AddForceCameraScript : MonoBehaviour
         RenderSpreadForce();
         RenderHeightToMap();
         SwapHeightmap();
+
     }
 
     void OnDestroy()
@@ -97,8 +95,8 @@ public class AddForceCameraScript : MonoBehaviour
 
     void CreateProcessmap()
     {
-        int width = mTexWidth;
-        int height = mTexHeight;
+        int width = mTexSize;
+        int height = mTexSize;
         mProcessmaps[(int)WaterProcessmap.PreHeight] = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
         mProcessmaps[(int)WaterProcessmap.PreHeight].wrapMode = TextureWrapMode.Clamp;
         mProcessmaps[(int)WaterProcessmap.PreHeight].name = "Pre Frame Height";
@@ -147,7 +145,7 @@ public class AddForceCameraScript : MonoBehaviour
             mWavePropagationMaterial.SetTexture(mHHeightCurrentTex, mProcessmaps[(int)WaterProcessmap.CurrHeight]);
             mWavePropagationMaterial.SetTexture(mHWaterShapeTex, mWaterShapeTex);
             mWavePropagationMaterial.SetFloat(mHDamping, mDampingRatio);
-            mWavePropagationMaterial.SetVector(mHTextureSize,  new Vector4(1.0f / (float)mTexWidth, 1.0f / (float)mTexHeight, 0, 0));
+            mWavePropagationMaterial.SetVector(mHTextureSize, new Vector4(1.0f / (float)mTexSize, 1.0f / (float)mTexSize, 0, 0));
             mProcessmaps[(int)WaterProcessmap.NextHeight].DiscardContents();
             Graphics.Blit(mProcessmaps[(int)WaterProcessmap.PreHeight], mProcessmaps[(int)WaterProcessmap.NextHeight], mWavePropagationMaterial);
         }
@@ -158,7 +156,7 @@ public class AddForceCameraScript : MonoBehaviour
         if (mHeightToNormalMaterial != null)
         {
             mHeightToNormalMaterial.SetTexture(mHHeightCurrentTex, mProcessmaps[(int)WaterProcessmap.CurrHeight]);
-            mHeightToNormalMaterial.SetVector(mHTextureSize, new Vector4(1.0f / (float)mTexWidth, 1.0f / (float)mTexHeight, 0, 0));
+            mHeightToNormalMaterial.SetVector(mHTextureSize, new Vector4(1.0f / (float)mTexSize, 1.0f / (float)mTexSize, 0, 0));
             mHeightToNormalMaterial.SetFloat(mHNormalScale, mNormalScale);
             mProcessmaps[(int)WaterProcessmap.Normal].DiscardContents();
             Graphics.Blit(mProcessmaps[(int)WaterProcessmap.CurrHeight], mProcessmaps[(int)WaterProcessmap.Normal], mHeightToNormalMaterial);

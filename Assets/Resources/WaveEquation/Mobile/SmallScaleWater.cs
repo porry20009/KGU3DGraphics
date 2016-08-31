@@ -25,8 +25,7 @@ public class SmallScaleWater : MonoBehaviour
     public Texture mWaterShapeTexture = null;//水面的形状
     public RefractTexScale mRefractTexScale = RefractTexScale.FullSize;
 
-    public int mTexWidth = 128;
-    public int mTexHeight = 128;
+    public int mTexSize = 128;
     public float m_waterPlaneOffset = 0.1f;
     [Range(0, 1)]
     public float mDampingRatio = 0.97f;  //区间[0,1]
@@ -224,8 +223,7 @@ public class SmallScaleWater : MonoBehaviour
             mAddForceCameraScript.InitializeCallBack = InitPostAddForceCameraScript;
             mUpdateWaterParameterCallBack = mAddForceCameraScript.UpdateWaterParameter;
 
-            mAddForceCameraScript.mTexWidth = mTexWidth;
-            mAddForceCameraScript.mTexHeight = mTexHeight;
+            mAddForceCameraScript.mTexSize = mTexSize;
             mAddForceCameraScript.mDampingRatio = mDampingRatio;
             mAddForceCameraScript.mForce = mForce;
             mAddForceCameraScript.mWaterShapeTex = mWaterShapeTexture;
@@ -352,11 +350,7 @@ public class SmallScaleWater : MonoBehaviour
         Vector3 v3MaxInViewSpace = Vector3.zero;
         Vector3 v3MinInViewSpace = Vector3.zero;
         Mesh mesh = gameObject.GetComponent<MeshFilter>().mesh;
-        Renderer rd = gameObject.GetComponent<Renderer>();
-        Vector3 OBBMin =  rd.localToWorldMatrix.MultiplyPoint3x4(mesh.bounds.min);
-        Vector3 OBBMax =  rd.localToWorldMatrix.MultiplyPoint3x4(mesh.bounds.max);
-
-        CalcuWaterPlaneAABBInViewSpace(mForceCamera, OBBMin, OBBMax, ref v3MaxInViewSpace, ref v3MinInViewSpace);
+        CalcuWaterPlaneAABBInViewSpace(mForceCamera, mesh.bounds.min, mesh.bounds.max, ref v3MaxInViewSpace, ref v3MinInViewSpace);
         BuildOrthogonalProjectMatrix(ref matAABBPoj, v3MaxInViewSpace, v3MinInViewSpace);
         mForceCamera.projectionMatrix = matAABBPoj;
 
@@ -368,11 +362,11 @@ public class SmallScaleWater : MonoBehaviour
         {
             if (mWaterShapeTexture != null)
             {
-                mUpdateWaterParameterCallBack(new System.Object[] { mTexWidth, mTexHeight, mDampingRatio, mForce,mNormalScale, mWaterShapeTexture });
+                mUpdateWaterParameterCallBack(new System.Object[] { mTexSize, mDampingRatio, mForce, mNormalScale, mWaterShapeTexture });
             }
             else
             {
-                mUpdateWaterParameterCallBack(new System.Object[] { mTexWidth, mTexHeight, mDampingRatio, mForce,mNormalScale });
+                mUpdateWaterParameterCallBack(new System.Object[] { mTexSize, mDampingRatio, mForce, mNormalScale });
             }
         }
     }
@@ -409,10 +403,12 @@ public class SmallScaleWater : MonoBehaviour
         //计算在MainCamera视图空间Object的AABB
         Vector3 v3MaxPosition = Vector3.one * -50000;
         Vector3 v3MinPosition = Vector3.one * 500000;
-
+      
+        Renderer rd = gameObject.GetComponent<Renderer>();
+        Matrix4x4 mat = camera.worldToCameraMatrix * rd.localToWorldMatrix;
         for (int vertId = 0; vertId < 8; ++vertId)
         {
-            Vector3 v3Position = camera.worldToCameraMatrix.MultiplyPoint3x4(vertices[vertId]);
+            Vector3 v3Position = mat.MultiplyPoint3x4(vertices[vertId]);
             if (v3Position.x > v3MaxPosition.x)
                 v3MaxPosition.x = v3Position.x;
             if (v3Position.y > v3MaxPosition.y)

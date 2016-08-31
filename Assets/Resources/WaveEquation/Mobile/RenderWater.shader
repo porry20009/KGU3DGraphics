@@ -70,7 +70,8 @@
                 #endif
 
                 fixed4 normalmap = tex2D(_WaterNormal, v2UV);
-				half3 normal = normalize((normalmap.rgb - 0.5f) * 2.0f);
+				//half3 normal = normalize((normalmap.rgb - 0.5f) * 2.0f);
+				half3 normal = normalize(normalmap.rgb * 2.0f - 1.0f);
                 
 				half3 incident = normalize(input.v4WPos.xyz - _WorldSpaceCameraPos.xyz);
                 half3 v3ReflectDir = normalize(reflect(incident, normal));
@@ -90,7 +91,7 @@
 				v3WaterColor += diffuse_factor * _WaterColor;
 				v3WaterColor += specular_factor;
 
-				return fixed4(v3WaterColor + v3ReflectColor, waterShape * fresnel + specular_factor);
+				return fixed4(v3WaterColor + v3ReflectColor, waterShape * (fresnel + specular_factor));
             }
             ENDCG
         }

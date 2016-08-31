@@ -33,6 +33,14 @@
             
             uniform half4 _TextureSize;
             uniform half  _Damping;
+
+			static const half3 g_offset[4] =
+	        {
+		         half3(-1.0f, 0.0f, 0.25f),
+		         half3( 1.0f, 0.0f, 0.25f),
+		         half3( 0.0f,-1.0f, 0.25f),
+		         half3( 0.0f, 1.0f, 0.25f),
+	        };	
         
             struct VS_OUTPUT
             {
@@ -53,28 +61,21 @@
 
             fixed4 MainPS(VS_OUTPUT input) : COLOR 
             {   
-	            half3 offset[4] =
-	            {
-		           half3(-1.0f, 0.0f, 0.25f),
-		           half3( 1.0f, 0.0f, 0.25f),
-		           half3( 0.0f,-1.0f, 0.25f),
-		           half3( 0.0f, 1.0f, 0.25f),
-	            };	
 	            half shape = tex2D(_WaterShapeTex, input.v2Texcoord);
 	            half fHeightPrev = DecodeHeightmap(tex2D(_HeightPrevTex, input.v2Texcoord));
 	
 	            half fHeighCurrent = 0;
 	            for ( int i=0; i<4; i++ )
 	            {
-	             	half2 texcoord = input.v2Texcoord + offset[i].xy * _TextureSize.xy;
-	             	fHeighCurrent += (DecodeHeightmap(tex2D(_HeightCurrentTex, texcoord)) * offset[i].z);
+	             	half2 texcoord = input.v2Texcoord + g_offset[i].xy * _TextureSize.xy;
+	             	fHeighCurrent += (DecodeHeightmap(tex2D(_HeightCurrentTex, texcoord)) * g_offset[i].z);
 	            }	
 	
 	            half fHeight = fHeighCurrent * 2.0f - fHeightPrev;
 	            fHeight *= _Damping;
 	            fixed4 color = EncodeHeightmap(fHeight);
 			
-	            return color * (shape > 0.1f ? 1.0f : 0.0f);
+	            return color * shape;
             }
             ENDCG
         }
