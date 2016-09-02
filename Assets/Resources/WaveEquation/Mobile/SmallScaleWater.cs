@@ -214,7 +214,7 @@ public class SmallScaleWater : MonoBehaviour
             mForceCamera.enabled = true;
             mForceCamera.targetTexture = null;
             mForceCamera.cullingMask = mCanDisturbWaterLayer;
-            mForceCamera.clearFlags = CameraClearFlags.Nothing;
+            mForceCamera.clearFlags = CameraClearFlags.SolidColor;
             mForceCamera.orthographic = true;
             mForceCamera.transform.Rotate(new Vector3(90, 180, 0), Space.Self);
             mForceCamera.nearClipPlane = -1000.0f;

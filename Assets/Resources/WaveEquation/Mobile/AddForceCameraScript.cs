@@ -8,13 +8,16 @@ public class AddForceCameraScript : MonoBehaviour
         PreHeight = 0,
         CurrHeight = 1,
         NextHeight = 2,
-        Normal = 3
+        PreOutline = 3,
+        CurrOutline = 4,
+        Normal = 5
     };
 
-    public RenderTexture[] mProcessmaps = { null, null, null, null };
+    public RenderTexture[] mProcessmaps = { null, null, null, null, null, null };
     public Shader mAddForceShader = null;
     public Material mWavePropagationMaterial = null;
     public Material mHeightToNormalMaterial = null;
+    public Material mOutlineToHeightMaterial = null;
 
     public InitGPUParameter InitializeCallBack = null;
     Camera mCamera = null;
@@ -37,6 +40,8 @@ public class AddForceCameraScript : MonoBehaviour
     int mHDamping = 0;
     int mHTextureSize = 0;
     int mHNormalScale = 0;
+    int mHOutlineCurrTex = 0;
+    int mHOutlinePreTex = 0;
     void Start()
     {
         mCamera = GetComponent<Camera>();
@@ -60,9 +65,11 @@ public class AddForceCameraScript : MonoBehaviour
     void OnPostRender()
     {
         AddForce();
-        RenderSpreadForce();
-        RenderHeightToMap();
+        OutlinemapToHeightmap();
+        ExecuteWaveEquation();
+        HeightmapToNormalmap();
         SwapHeightmap();
+        SwapOutlinemap();
 
     }
 
@@ -83,6 +90,7 @@ public class AddForceCameraScript : MonoBehaviour
         mAddForceShader = Shader.Find("Water/SmallScale/AddFource");
         mWavePropagationMaterial = new Material(Shader.Find("Water/SmallScale/WaterSimulation"));
         mHeightToNormalMaterial = new Material(Shader.Find("Water/SmallScale/HeightToNormal"));
+        mOutlineToHeightMaterial = new Material(Shader.Find("Water/SmallScale/OutlineToHeight"));   
 
         mHForce = Shader.PropertyToID("_Force");
         mHHeightPrevTex = Shader.PropertyToID("_HeightPrevTex");
@@ -91,6 +99,8 @@ public class AddForceCameraScript : MonoBehaviour
         mHDamping = Shader.PropertyToID("_Damping");
         mHTextureSize = Shader.PropertyToID("_TextureSize");
         mHNormalScale = Shader.PropertyToID("_NormalScale");
+        mHOutlineCurrTex = Shader.PropertyToID("_OutlineCurrTex");
+        mHOutlinePreTex = Shader.PropertyToID("_OutlinePreTex");
     }
 
     void CreateProcessmap()
@@ -100,25 +110,31 @@ public class AddForceCameraScript : MonoBehaviour
         mProcessmaps[(int)WaterProcessmap.PreHeight] = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
         mProcessmaps[(int)WaterProcessmap.PreHeight].wrapMode = TextureWrapMode.Clamp;
         mProcessmaps[(int)WaterProcessmap.PreHeight].name = "Pre Frame Height";
-        mProcessmaps[(int)WaterProcessmap.PreHeight].generateMips = false;
         mProcessmaps[(int)WaterProcessmap.PreHeight].isPowerOfTwo = true;
 
         mProcessmaps[(int)WaterProcessmap.CurrHeight] = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
         mProcessmaps[(int)WaterProcessmap.CurrHeight].wrapMode = TextureWrapMode.Clamp;
         mProcessmaps[(int)WaterProcessmap.CurrHeight].name = "Curr Frame Height";
-        mProcessmaps[(int)WaterProcessmap.CurrHeight].generateMips = false;
         mProcessmaps[(int)WaterProcessmap.CurrHeight].isPowerOfTwo = true;
 
         mProcessmaps[(int)WaterProcessmap.NextHeight] = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
         mProcessmaps[(int)WaterProcessmap.NextHeight].wrapMode = TextureWrapMode.Clamp;
         mProcessmaps[(int)WaterProcessmap.NextHeight].name = "Next Frame Height";
-        mProcessmaps[(int)WaterProcessmap.NextHeight].generateMips = false;
         mProcessmaps[(int)WaterProcessmap.NextHeight].isPowerOfTwo = true;
+
+        mProcessmaps[(int)WaterProcessmap.PreOutline] = new RenderTexture(width / 2, height / 2, 0, RenderTextureFormat.ARGB32);
+        mProcessmaps[(int)WaterProcessmap.PreOutline].wrapMode = TextureWrapMode.Clamp;
+        mProcessmaps[(int)WaterProcessmap.PreOutline].name = "Pre Outline";
+        mProcessmaps[(int)WaterProcessmap.PreOutline].isPowerOfTwo = true;
+
+        mProcessmaps[(int)WaterProcessmap.CurrOutline] = new RenderTexture(width / 2, height / 2, 0, RenderTextureFormat.ARGB32);
+        mProcessmaps[(int)WaterProcessmap.CurrOutline].wrapMode = TextureWrapMode.Clamp;
+        mProcessmaps[(int)WaterProcessmap.CurrOutline].name = "Curr Outline";
+        mProcessmaps[(int)WaterProcessmap.CurrOutline].isPowerOfTwo = true;
 
         mProcessmaps[(int)WaterProcessmap.Normal] = new RenderTexture(width, height, 0, RenderTextureFormat.ARGB32);
         mProcessmaps[(int)WaterProcessmap.Normal].wrapMode = TextureWrapMode.Clamp;
         mProcessmaps[(int)WaterProcessmap.Normal].name = "Normal";
-        mProcessmaps[(int)WaterProcessmap.Normal].generateMips = false;
         mProcessmaps[(int)WaterProcessmap.Normal].isPowerOfTwo = true;
 
         RenderTexture mainRTT = RenderTexture.active;
@@ -129,7 +145,7 @@ public class AddForceCameraScript : MonoBehaviour
         }
         RenderTexture.active = mainRTT;
 
-        mCamera.targetTexture = mProcessmaps[(int)WaterProcessmap.CurrHeight];
+        mCamera.targetTexture = mProcessmaps[(int)WaterProcessmap.CurrOutline];
     }
 
     void AddForce()
@@ -137,7 +153,18 @@ public class AddForceCameraScript : MonoBehaviour
         Shader.SetGlobalFloat(mHForce, mForce);
     }
 
-    void RenderSpreadForce()
+    void OutlinemapToHeightmap()
+    {
+        if (mOutlineToHeightMaterial != null)
+        {
+            mOutlineToHeightMaterial.SetTexture(mHOutlinePreTex, mProcessmaps[(int)WaterProcessmap.PreOutline]);
+            mOutlineToHeightMaterial.SetTexture(mHOutlineCurrTex, mProcessmaps[(int)WaterProcessmap.CurrOutline]);
+            mProcessmaps[(int)WaterProcessmap.CurrHeight].DiscardContents();
+            Graphics.Blit(mProcessmaps[(int)WaterProcessmap.CurrOutline], mProcessmaps[(int)WaterProcessmap.CurrHeight], mOutlineToHeightMaterial);
+        }
+    }
+
+    void ExecuteWaveEquation()
     {
         if (mWavePropagationMaterial != null)
         {
@@ -151,7 +178,7 @@ public class AddForceCameraScript : MonoBehaviour
         }
     }
 
-    void RenderHeightToMap()
+    void HeightmapToNormalmap()
     {
         if (mHeightToNormalMaterial != null)
         {
@@ -165,11 +192,19 @@ public class AddForceCameraScript : MonoBehaviour
 
     void SwapHeightmap()
     {
-        mCamera.targetTexture = mProcessmaps[(int)WaterProcessmap.CurrHeight];
+      //  mCamera.targetTexture = mProcessmaps[(int)WaterProcessmap.CurrHeight];
         RenderTexture temp = mProcessmaps[(int)WaterProcessmap.PreHeight];
         mProcessmaps[(int)WaterProcessmap.PreHeight] = mProcessmaps[(int)WaterProcessmap.CurrHeight];
         mProcessmaps[(int)WaterProcessmap.CurrHeight] = mProcessmaps[(int)WaterProcessmap.NextHeight];
         mProcessmaps[(int)WaterProcessmap.NextHeight] = temp;
+    }
+
+    void SwapOutlinemap()
+    {
+        mCamera.targetTexture = mProcessmaps[(int)WaterProcessmap.CurrOutline];
+        RenderTexture temp = mProcessmaps[(int)WaterProcessmap.CurrOutline];
+        mProcessmaps[(int)WaterProcessmap.CurrOutline] = mProcessmaps[(int)WaterProcessmap.PreOutline];
+        mProcessmaps[(int)WaterProcessmap.PreOutline] = temp;
     }
 
     public Camera GetCamera()

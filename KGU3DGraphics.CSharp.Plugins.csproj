@@ -145,6 +145,7 @@
     <None Include="Assets\Resources\WaveEquation\Mobile\AddFource.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\HeightCode.cginc" />
     <None Include="Assets\Resources\WaveEquation\Mobile\HeightToNormal.shader" />
+    <None Include="Assets\Resources\WaveEquation\Mobile\OutlineToHeight.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater_Refraction.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\WaterSimulation.shader" />
