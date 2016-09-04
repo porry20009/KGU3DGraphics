@@ -218,6 +218,8 @@
     <Compile Include="Assets\Resources\Noise\Noise.cs" />
     <Compile Include="Assets\Resources\Others\UIFPS.cs" />
     <Compile Include="Assets\Resources\PerlinNoiseWater\PerlinNoiseWater.cs" />
+    <Compile Include="Assets\Resources\Radiancy\Octree.cs" />
+    <Compile Include="Assets\Resources\Radiancy\TestOctree.cs" />
     <Compile Include="Assets\Resources\Sky\SimplifiedSky.cs" />
     <Compile Include="Assets\Resources\WaveEquation\Mobile\AddForceCameraScript.cs" />
     <Compile Include="Assets\Resources\WaveEquation\Mobile\SmallScaleWater.cs" />
