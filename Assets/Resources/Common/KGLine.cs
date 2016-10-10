@@ -4,41 +4,93 @@ using System.Collections.Generic;
 //挂到空的GameObject上
 public class KGLine : MonoBehaviour
 {
-    public bool isUpdate = true;
-    public List<Vector3> m_lineVerticesPosition = new List<Vector3>();
-    public List<Color> m_lineVerticesColor = new List<Color>();
+    List<Vector3> mPositions = new List<Vector3>();
+    List<Color> mColors = new List<Color>();
+    List<int> mIndices = new List<int>();
 
-    Mesh m_mesh = null;
-    Material m_material = null;
+    Mesh mMesh = null;
+    Material mMaterial = null;
+
+    int mCurrPointNumber = 0;
     void Start()
     {
-        if (m_lineVerticesPosition.Count > 0)
+        mMaterial = new Material(Shader.Find("KGLine"));
+        MeshFilter filter = gameObject.GetComponent<MeshFilter>();
+        if (filter == null)
+            filter = gameObject.AddComponent<MeshFilter>();
+        else
         {
-            m_material = new Material(Shader.Find("KGLine"));
-            m_mesh = new Mesh();
-            m_mesh.SetVertices(m_lineVerticesPosition);
-            m_mesh.SetColors(m_lineVerticesColor);
-            int[] indices = new int[m_lineVerticesPosition.Count];
-            for (int i = 0; i < m_lineVerticesPosition.Count - 1; i++)
-            {
-                indices[i] = i;
-                indices[i + 1] = i + 1;
-            }
-            m_mesh.SetIndices(indices, MeshTopology.LineStrip, 0);
-            MeshFilter filter = gameObject.AddComponent<MeshFilter>();
-            filter.mesh = m_mesh;
-            MeshRenderer rd = gameObject.AddComponent<MeshRenderer>();
-            rd.material = m_material;
+            Debug.LogError("你确定是挂在Empty GameObject下？");
+            return;
         }
+        filter.mesh = new Mesh();
+        MeshRenderer rd = gameObject.GetComponent<MeshRenderer>();
+        if (rd == null)
+            rd = gameObject.AddComponent<MeshRenderer>();
+        rd.material = mMaterial;
+        mMesh = filter.mesh;
     }
+
     void Update()
     {
-        transform.position = Vector3.zero;
-        if (isUpdate && m_mesh != null)
+        if (mCurrPointNumber < 65536)
         {
-            m_mesh.SetVertices(m_lineVerticesPosition);
-            m_mesh.SetColors(m_lineVerticesColor);
-            m_mesh.RecalculateBounds();
+            if (mMesh != null)
+            {
+                mMesh.SetVertices(mPositions);
+                mMesh.SetIndices(mIndices.ToArray(), MeshTopology.Lines, 0);
+                mMesh.SetColors(mColors);
+                mMesh.RecalculateBounds();
+            }
         }
+    }
+
+    public bool Draw(Vector3 from,Vector3 to,Color color)
+    {
+        if (mCurrPointNumber < 65536)
+        {
+            if (mPositions.Count > mCurrPointNumber)
+            {
+                mPositions[mCurrPointNumber] = from;
+                mIndices[mCurrPointNumber] = mCurrPointNumber;
+                mColors[mCurrPointNumber] = color;
+            }
+            else
+            {
+                mPositions.Add(from);
+                mIndices.Add(mCurrPointNumber);
+                mColors.Add(color);
+            }
+            mCurrPointNumber++;
+
+            if (mPositions.Count > mCurrPointNumber)
+            {
+                mPositions[mCurrPointNumber] = to;
+                mIndices[mCurrPointNumber] = mCurrPointNumber;
+                mColors[mCurrPointNumber] = color;
+            }
+            else
+            {
+                mPositions.Add(to);
+                mIndices.Add(mCurrPointNumber);
+                mColors.Add(color);
+            }
+            mCurrPointNumber++;
+            return true;
+        }
+        else
+        {
+            Debug.LogWarning("顶点数量超过了65536个!");
+            return false;
+        }
+    }
+
+    public void BeginDraw()
+    {
+        mCurrPointNumber = 0;
+    }
+    public void EndDraw()
+    {
+
     }
 }

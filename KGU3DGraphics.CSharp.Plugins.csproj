@@ -131,6 +131,7 @@
     <None Include="Assets\Resources\BRDF\CookTorrance.shader" />
     <None Include="Assets\Resources\CSMs\ShadowPassOne.shader" />
     <None Include="Assets\Resources\CSMs\ShadowPassTwo.shader" />
+    <None Include="Assets\Resources\Common\DoubleSide.shader" />
     <None Include="Assets\Resources\Common\GaussianBlur.shader" />
     <None Include="Assets\Resources\Common\KGLine.shader" />
     <None Include="Assets\Resources\HDR\SimplifiedHDR.shader" />
@@ -149,6 +150,18 @@
     <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\RenderWater_Refraction.shader" />
     <None Include="Assets\Resources\WaveEquation\Mobile\WaterSimulation.shader" />
+    <None Include="Assets\Resources\Weld\Curr\CS_Welder.compute" />
+    <None Include="Assets\Resources\Weld\Curr\Fluid\AddForce.shader" />
+    <None Include="Assets\Resources\Weld\Curr\Fluid\HeightToNormal.shader" />
+    <None Include="Assets\Resources\Weld\Curr\Fluid\WavePropagation.shader" />
+    <None Include="Assets\Resources\Weld\Curr\HeatFlux\AddHeat.shader" />
+    <None Include="Assets\Resources\Weld\Curr\HeatFlux\HeatDistribution.shader" />
+    <None Include="Assets\Resources\Weld\Curr\HeatFlux\LoseHeat.shader" />
+    <None Include="Assets\Resources\Weld\Curr\HeatFlux\ShowHeat.shader" />
+    <None Include="Assets\Resources\Weld\Curr\Welder.shader" />
+    <None Include="Assets\Resources\Weld\Curr\WelderDisplacement.shader" />
+    <None Include="Assets\Resources\Weld\Old\PreCalcu.shader" />
+    <None Include="Assets\Resources\Weld\Old\WeldObject.shader" />
     <None Include="Assets\Slua\Resources\circle\circle.txt" />
     <None Include="Assets\Slua\Resources\custom.txt" />
     <None Include="Assets\Slua\Resources\delegate.txt" />

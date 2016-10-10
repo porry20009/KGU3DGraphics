@@ -1,0 +1,53 @@
+﻿#pragma kernel CSSumDisplacement
+#pragma kernel CSRecalculateNormal
+
+struct VerticesAdjFaces
+{
+   int3 triangleID[6];
+};
+
+Texture2D txDeltaPositionTex;
+StructuredBuffer<int> gVerticesIndex;
+StructuredBuffer<VerticesAdjFaces> gVerticesAdjFaces;
+RWStructuredBuffer<float4> gPosition;
+RWStructuredBuffer<float3> gNormals;
+
+groupshared float3 gTriNormalCache[6];
+cbuffer cbParameter
+{
+	int3 gDispatch = int3(128, 128, 1);
+};
+
+[numthreads(1, 1, 1)]
+void CSSumDisplacement(int3 dispatchTreadID : SV_DispatchThreadID,int3 groupID : SV_GroupID)
+{
+    int vertexID = gVerticesIndex[dispatchTreadID.y * gDispatch.x + dispatchTreadID.x];
+	float height = txDeltaPositionTex[int2(dispatchTreadID.y,dispatchTreadID.x)].x;
+    float3 currDisplacement = gNormals[vertexID] * height;
+	gPosition[vertexID].xyz += currDisplacement;
+	gPosition[vertexID].w += smoothstep(0,0.002,height);
+}
+
+[numthreads(6, 1, 1)]
+void CSRecalculateNormal(int3 dispatchTreadID : SV_DispatchThreadID, int3 groupID : SV_GroupID, int groupIndex : SV_GroupIndex)
+{
+	 int vertexID = gVerticesIndex[groupID.y * gDispatch.x + groupID.x];
+	 VerticesAdjFaces triAdjFaces = gVerticesAdjFaces[vertexID];
+	 float3 normal = float3(0,0,0);
+
+	 int3 triangleID = triAdjFaces.triangleID[groupIndex];
+	 if (triangleID.x != -1 )
+	 {
+		 float3 vec0 = gPosition[triangleID.y].xyz - gPosition[triangleID.x].xyz;
+		 float3 vec1 = gPosition[triangleID.z].xyz - gPosition[triangleID.x].xyz;
+		 normal = cross(vec0, vec1);
+	 }
+	 gTriNormalCache[groupIndex] = normal;
+	 GroupMemoryBarrierWithGroupSync();
+	 float3 sumNormal = float3(0, 0, 0);
+	 for (int i = 0; i < 6; i++)
+	 {
+		 sumNormal += gTriNormalCache[i];
+	 }
+	 gNormals[vertexID] = normalize(sumNormal);
+}

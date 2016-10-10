@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/HDR.unity
+- path: Assets/Weld.unity
   isLoaded: 1
   isActive: 1

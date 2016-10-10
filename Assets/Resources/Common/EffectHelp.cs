@@ -221,8 +221,8 @@ public class EffectHelp
                 vertices[r * colCount + c].y = 0 + offsetVector.y;
                 vertices[r * colCount + c].z = cellSize.y * r + offsetVector.z;
 
-                uvs[r * colCount + c].x = (float)r / (float)(rowCount - 1);
-                uvs[r * colCount + c].y = (float)c / (float)(colCount - 1);
+                uvs[r * colCount + c].x = (float)c / (float)(colCount - 1);
+                uvs[r * colCount + c].y = (float)r / (float)(rowCount - 1);
 
             }
         }
@@ -433,7 +433,14 @@ public class EffectHelp
 
     public float SquareDistance(Vector2 a,Vector2 b)
     {
-        return (a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y);
+        Vector2 vec = a - b;
+        return Vector2.Dot(vec, vec);
+    }
+
+    public float SquareDistance(Vector3 a, Vector3 b)
+    {
+        Vector3 vec = a - b;
+        return Vector3.Dot(vec, vec);
     }
 
     public float Length(Vector3 a)
